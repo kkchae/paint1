@@ -1,0 +1,303 @@
+// sw_paint.rc : resource script (UTF-8, see code_page pragma below)
+#include "resource.h"
+#include "afxres.h"
+
+#pragma code_page(65001)
+
+LANGUAGE LANG_KOREAN, SUBLANG_DEFAULT
+
+/////////////////////////////////////////////////////////////////////////////
+// 아이콘
+
+IDR_MAINFRAME           ICON                    "res\\sw_paint.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+// 메뉴
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "파일(&F)"
+    BEGIN
+        MENUITEM "새로 만들기(&N)\tCtrl+N",               ID_FILE_NEW
+        MENUITEM "열기(&O)...\tCtrl+O",                   ID_FILE_OPEN
+        MENUITEM "저장(&S)\tCtrl+S",                      ID_FILE_SAVE
+        MENUITEM "다른 이름으로 저장(&A)...\tCtrl+Shift+S", ID_FILE_SAVE_AS
+        MENUITEM SEPARATOR
+        MENUITEM "이미지 속성(&P)...\tCtrl+E",            ID_IMAGE_PROPERTIES
+        MENUITEM SEPARATOR
+        MENUITEM "끝내기(&X)",                            ID_APP_EXIT
+    END
+    POPUP "편집(&E)"
+    BEGIN
+        MENUITEM "실행 취소(&U)\tCtrl+Z",                 ID_EDIT_UNDO
+        MENUITEM "다시 실행(&R)\tCtrl+Y",                 ID_EDIT_REDO
+        MENUITEM SEPARATOR
+        MENUITEM "잘라내기(&T)\tCtrl+X",                  ID_EDIT_CUT
+        MENUITEM "복사(&C)\tCtrl+C",                      ID_EDIT_COPY
+        MENUITEM "붙여넣기(&P)\tCtrl+V",                  ID_EDIT_PASTE
+        MENUITEM SEPARATOR
+        MENUITEM "모두 선택(&A)\tCtrl+A",                 ID_EDIT_SELECT_ALL
+        MENUITEM "선택 영역 삭제(&D)\tDel",               ID_EDIT_CLEAR
+        MENUITEM "투명 선택(&N)",                         ID_SELECT_TRANSPARENT
+    END
+    POPUP "보기(&V)"
+    BEGIN
+        MENUITEM "확대(&I)\tCtrl+Page Up",                ID_VIEW_ZOOM_IN
+        MENUITEM "축소(&O)\tCtrl+Page Down",              ID_VIEW_ZOOM_OUT
+        MENUITEM "100%(&1)\tCtrl+1",                      ID_VIEW_ZOOM_100
+        MENUITEM "창에 맞추기(&F)\tCtrl+0",               ID_VIEW_ZOOM_FIT
+        MENUITEM SEPARATOR
+        MENUITEM "눈금자(&R)\tCtrl+R",                    ID_VIEW_RULERS
+        MENUITEM "눈금선(&G)\tCtrl+G",                    ID_VIEW_GRID
+        MENUITEM "상태 표시줄(&S)",                       ID_VIEW_STATUS_BAR
+        MENUITEM SEPARATOR
+        MENUITEM "다크 모드(&D)",                         ID_VIEW_DARKMODE
+    END
+    POPUP "이미지(&I)"
+    BEGIN
+        MENUITEM "자르기(&C)\tCtrl+Shift+X",              ID_IMAGE_CROP
+        MENUITEM "크기 조정 및 기울이기(&R)...\tCtrl+W",  ID_IMAGE_RESIZE
+        MENUITEM SEPARATOR
+        MENUITEM "오른쪽으로 90도 회전",                  ID_IMAGE_ROTATE_RIGHT
+        MENUITEM "왼쪽으로 90도 회전",                    ID_IMAGE_ROTATE_LEFT
+        MENUITEM "180도 회전",                            ID_IMAGE_ROTATE_180
+        MENUITEM "세로로 대칭 이동",                      ID_IMAGE_FLIP_V
+        MENUITEM "가로로 대칭 이동",                      ID_IMAGE_FLIP_H
+        MENUITEM SEPARATOR
+        MENUITEM "색 반전(&I)\tCtrl+Shift+I",             ID_IMAGE_INVERT
+        MENUITEM "이미지 지우기(&L)\tCtrl+Shift+N",       ID_IMAGE_CLEAR
+        MENUITEM "이미지 속성(&P)...\tCtrl+E",            ID_IMAGE_PROPERTIES
+    END
+    POPUP "도구(&T)"
+    BEGIN
+        MENUITEM "사각형 선택(&S)",                       ID_TOOL_SELECT_RECT
+        MENUITEM "자유 형식 선택(&F)",                    ID_TOOL_SELECT_FREE
+        MENUITEM SEPARATOR
+        MENUITEM "연필(&P)",                              ID_TOOL_PENCIL
+        MENUITEM "채우기(&B)",                            ID_TOOL_FILL
+        MENUITEM "텍스트(&T)",                            ID_TOOL_TEXT
+        MENUITEM "지우개(&E)",                            ID_TOOL_ERASER
+        MENUITEM "색 선택(&K)",                           ID_TOOL_PICKER
+        MENUITEM "돋보기(&M)",                            ID_TOOL_MAGNIFIER
+        POPUP "브러시(&R)"
+        BEGIN
+            MENUITEM "브러시",                            33200
+            MENUITEM "캘리그라피 브러시 1",               33201
+            MENUITEM "캘리그라피 브러시 2",               33202
+            MENUITEM "에어브러시",                        33203
+            MENUITEM "유화 브러시",                       33204
+            MENUITEM "크레용",                            33205
+            MENUITEM "마커",                              33206
+            MENUITEM "자연스러운 연필",                   33207
+            MENUITEM "수채화 브러시",                     33208
+        END
+        POPUP "도형(&H)"
+        BEGIN
+            MENUITEM "선",                                33100
+            MENUITEM "곡선",                              33101
+            MENUITEM "타원",                              33102
+            MENUITEM "사각형",                            33103
+            MENUITEM "둥근 사각형",                       33104
+            MENUITEM "다각형",                            33105
+            MENUITEM "삼각형",                            33106
+            MENUITEM "직각 삼각형",                       33107
+            MENUITEM "마름모",                            33108
+            MENUITEM "오각형",                            33109
+            MENUITEM "육각형",                            33110
+            MENUITEM "오른쪽 화살표",                     33111
+            MENUITEM "왼쪽 화살표",                       33112
+            MENUITEM "위쪽 화살표",                       33113
+            MENUITEM "아래쪽 화살표",                     33114
+            MENUITEM "4각 별",                            33115
+            MENUITEM "5각 별",                            33116
+            MENUITEM "6각 별",                            33117
+            MENUITEM "둥근 사각형 설명선",                33118
+            MENUITEM "타원형 설명선",                     33119
+            MENUITEM "구름 모양 설명선",                  33120
+            MENUITEM "하트",                              33121
+            MENUITEM "번개",                              33122
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "굵게(&+)\tCtrl+]",                      ID_SIZE_INC
+        MENUITEM "가늘게(&-)\tCtrl+[",                    ID_SIZE_DEC
+        MENUITEM SEPARATOR
+        MENUITEM "색 편집(&C)...",                        ID_COLOR_EDIT
+        MENUITEM "색 1/색 2 바꾸기(&W)\tCtrl+Shift+W",    ID_COLOR_SWAP
+    END
+    POPUP "도움말(&H)"
+    BEGIN
+        MENUITEM "그림판 정보(&A)...",                    ID_APP_ABOUT
+    END
+END
+
+/////////////////////////////////////////////////////////////////////////////
+// 단축키
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVE_AS,        VIRTKEY, CONTROL, SHIFT, NOINVERT
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
+    "Y",            ID_EDIT_REDO,           VIRTKEY, CONTROL, NOINVERT
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
+    "A",            ID_EDIT_SELECT_ALL,     VIRTKEY, CONTROL, NOINVERT
+    VK_DELETE,      ID_EDIT_CLEAR,          VIRTKEY, NOINVERT
+    "W",            ID_IMAGE_RESIZE,        VIRTKEY, CONTROL, NOINVERT
+    "E",            ID_IMAGE_PROPERTIES,    VIRTKEY, CONTROL, NOINVERT
+    "X",            ID_IMAGE_CROP,          VIRTKEY, CONTROL, SHIFT, NOINVERT
+    "I",            ID_IMAGE_INVERT,        VIRTKEY, CONTROL, SHIFT, NOINVERT
+    "N",            ID_IMAGE_CLEAR,         VIRTKEY, CONTROL, SHIFT, NOINVERT
+    "W",            ID_COLOR_SWAP,          VIRTKEY, CONTROL, SHIFT, NOINVERT
+    "G",            ID_VIEW_GRID,           VIRTKEY, CONTROL, NOINVERT
+    "R",            ID_VIEW_RULERS,         VIRTKEY, CONTROL, NOINVERT
+    0xDD,           ID_SIZE_INC,            VIRTKEY, CONTROL, NOINVERT
+    0xDB,           ID_SIZE_DEC,            VIRTKEY, CONTROL, NOINVERT
+    VK_PRIOR,       ID_VIEW_ZOOM_IN,        VIRTKEY, CONTROL, NOINVERT
+    VK_NEXT,        ID_VIEW_ZOOM_OUT,       VIRTKEY, CONTROL, NOINVERT
+    VK_ADD,         ID_VIEW_ZOOM_IN,        VIRTKEY, CONTROL, NOINVERT
+    VK_SUBTRACT,    ID_VIEW_ZOOM_OUT,       VIRTKEY, CONTROL, NOINVERT
+    0xBB,           ID_VIEW_ZOOM_IN,        VIRTKEY, CONTROL, NOINVERT
+    0xBD,           ID_VIEW_ZOOM_OUT,       VIRTKEY, CONTROL, NOINVERT
+    "1",            ID_VIEW_ZOOM_100,       VIRTKEY, CONTROL, NOINVERT
+    "0",            ID_VIEW_ZOOM_FIT,       VIRTKEY, CONTROL, NOINVERT
+END
+
+/////////////////////////////////////////////////////////////////////////////
+// 대화 상자
+
+IDD_RESIZE DIALOGEX 0, 0, 222, 196
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "크기 조정 및 기울이기"
+FONT 9, "맑은 고딕", 400, 0, 0x81
+BEGIN
+    GROUPBOX        "크기 조정",IDC_STATIC,7,7,208,94
+    CONTROL         "백분율(&E)",IDC_RB_PERCENT,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,18,21,70,10
+    CONTROL         "픽셀(&X)",IDC_RB_PIXELS,"Button",BS_AUTORADIOBUTTON,100,21,70,10
+    LTEXT           "가로(&H):",IDC_STATIC,18,41,50,8
+    EDITTEXT        IDC_EDIT_H,80,39,70,13,ES_NUMBER | ES_AUTOHSCROLL | WS_GROUP
+    LTEXT           "세로(&V):",IDC_STATIC,18,60,50,8
+    EDITTEXT        IDC_EDIT_V,80,58,70,13,ES_NUMBER | ES_AUTOHSCROLL
+    CONTROL         "가로 세로 비율 유지(&M)",IDC_CHK_ASPECT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,80,140,10
+    GROUPBOX        "기울이기 (도)",IDC_STATIC,7,106,208,62
+    LTEXT           "가로(&O):",IDC_STATIC,18,123,50,8
+    EDITTEXT        IDC_EDIT_SKEWH,80,121,70,13,ES_AUTOHSCROLL
+    LTEXT           "세로(&R):",IDC_STATIC,18,145,50,8
+    EDITTEXT        IDC_EDIT_SKEWV,80,143,70,13,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "확인",IDOK,109,175,50,14
+    PUSHBUTTON      "취소",IDCANCEL,165,175,50,14
+END
+
+IDD_CANVASSIZE DIALOGEX 0, 0, 200, 104
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "이미지 속성"
+FONT 9, "맑은 고딕", 400, 0, 0x81
+BEGIN
+    LTEXT           "",IDC_STATIC_CUR,10,10,180,9
+    GROUPBOX        "캔버스 크기 (픽셀)",IDC_STATIC,7,24,186,52
+    LTEXT           "너비(&W):",IDC_STATIC,18,40,50,8
+    EDITTEXT        IDC_EDIT_WIDTH,80,38,70,13,ES_NUMBER | ES_AUTOHSCROLL
+    LTEXT           "높이(&H):",IDC_STATIC,18,58,50,8
+    EDITTEXT        IDC_EDIT_HEIGHT,80,56,70,13,ES_NUMBER | ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "확인",IDOK,87,83,50,14
+    PUSHBUTTON      "취소",IDCANCEL,143,83,50,14
+END
+
+/////////////////////////////////////////////////////////////////////////////
+// 문자열
+
+STRINGTABLE
+BEGIN
+    IDR_MAINFRAME           "그림판"
+    AFX_IDS_APP_TITLE       "그림판"
+    AFX_IDS_IDLEMESSAGE     "준비"
+    ID_IND_POS              "                    "
+    ID_IND_SEL              "                    "
+    ID_IND_SIZE             "                    "
+    ID_IND_ZOOM             "        "
+    ID_IND_ZOOMBAR          " "
+END
+
+STRINGTABLE
+BEGIN
+    ID_FILE_NEW             "새 그림을 만듭니다.\n새로 만들기"
+    ID_FILE_OPEN            "기존 그림을 엽니다.\n열기"
+    ID_FILE_SAVE            "현재 그림을 저장합니다.\n저장"
+    ID_FILE_SAVE_AS         "현재 그림을 새 이름으로 저장합니다.\n다른 이름으로 저장"
+    ID_APP_EXIT             "그림판을 끝냅니다.\n끝내기"
+    ID_APP_ABOUT            "프로그램 정보를 표시합니다.\n정보"
+    ID_EDIT_UNDO            "마지막 작업을 취소합니다.\n실행 취소"
+    ID_EDIT_REDO            "취소한 작업을 다시 실행합니다.\n다시 실행"
+    ID_EDIT_CUT             "선택 영역을 잘라내어 클립보드에 넣습니다.\n잘라내기"
+    ID_EDIT_COPY            "선택 영역을 클립보드에 복사합니다.\n복사"
+    ID_EDIT_PASTE           "클립보드의 그림을 붙여넣습니다.\n붙여넣기"
+    ID_EDIT_SELECT_ALL      "그림 전체를 선택합니다.\n모두 선택"
+    ID_EDIT_CLEAR           "선택 영역을 삭제합니다.\n삭제"
+    ID_VIEW_STATUS_BAR      "상태 표시줄을 표시하거나 숨깁니다.\n상태 표시줄"
+END
+
+STRINGTABLE
+BEGIN
+    ID_IMAGE_CROP           "그림을 선택 영역으로 자릅니다.\n자르기"
+    ID_IMAGE_RESIZE         "그림이나 선택 영역의 크기를 조정하고 기울입니다.\n크기 조정 및 기울이기"
+    ID_IMAGE_ROTATE_RIGHT   "오른쪽으로 90도 회전합니다.\n오른쪽으로 회전"
+    ID_IMAGE_ROTATE_LEFT    "왼쪽으로 90도 회전합니다.\n왼쪽으로 회전"
+    ID_IMAGE_ROTATE_180     "180도 회전합니다.\n180도 회전"
+    ID_IMAGE_FLIP_V         "위아래로 뒤집습니다.\n세로로 대칭 이동"
+    ID_IMAGE_FLIP_H         "좌우로 뒤집습니다.\n가로로 대칭 이동"
+    ID_IMAGE_INVERT         "색을 반전합니다.\n색 반전"
+    ID_IMAGE_PROPERTIES     "캔버스 크기를 변경합니다.\n이미지 속성"
+    ID_IMAGE_CLEAR          "그림 전체를 색 2로 지웁니다.\n이미지 지우기"
+    ID_SELECT_TRANSPARENT   "색 2와 같은 색을 투명하게 처리합니다.\n투명 선택"
+    ID_VIEW_ZOOM_IN         "확대합니다.\n확대"
+    ID_VIEW_ZOOM_OUT        "축소합니다.\n축소"
+    ID_VIEW_ZOOM_100        "실제 크기(100%)로 봅니다.\n100%"
+    ID_VIEW_ZOOM_FIT        "그림을 창 크기에 맞춥니다.\n창에 맞추기"
+    ID_VIEW_GRID            "눈금선을 표시하거나 숨깁니다.\n눈금선"
+    ID_VIEW_RULERS          "눈금자를 표시하거나 숨깁니다.\n눈금자"
+    ID_VIEW_DARKMODE        "어두운 테마와 밝은 테마를 전환합니다.\n다크 모드"
+    ID_SIZE_INC             "선 굵기를 늘립니다.\n굵게"
+    ID_SIZE_DEC             "선 굵기를 줄입니다.\n가늘게"
+    ID_COLOR_EDIT           "사용자 지정 색을 만듭니다.\n색 편집"
+    ID_COLOR_SWAP           "색 1과 색 2를 바꿉니다.\n색 바꾸기"
+END
+
+/////////////////////////////////////////////////////////////////////////////
+// 버전 정보
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+ FILEFLAGS 0x0L
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "041204b0"
+        BEGIN
+            VALUE "FileDescription", "그림판 (MFC)"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "sw_paint.exe"
+            VALUE "OriginalFilename", "sw_paint.exe"
+            VALUE "ProductName", "그림판 (MFC)"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x412, 1200
+    END
+END
+
+/////////////////////////////////////////////////////////////////////////////
+// MFC 표준 리소스 (정적 링크용)
+
+#if !defined(_AFXDLL)
+#include "l.kor\\afxres.rc"
+#endif
