@@ -76,6 +76,8 @@ void CCanvasWnd::OnMouseLeave()
     m_trackingLeave = false;
     m_hoverIn = false;
     m_hoverValid = false;
+    m_cursorPending = false;
+    SendCursorUpdate(false);
     UpdateStatus();
     InvalidateRulers();
     if (m_tool == TOOL_ERASER)
@@ -288,7 +290,11 @@ void CCanvasWnd::MouseMove(CPoint pt, UINT flags)
     bool shift = (flags & MK_SHIFT) != 0;
     CPoint cp(ClampV((int)ip.x, 0, m_img.Width() - 1), ClampV((int)ip.y, 0, m_img.Height() - 1));
     if (oldHover != m_hoverImg)
+    {
         InvalidateRulers();
+        if (m_hoverValid)
+            SendCursorUpdate(true);
+    }
 
     switch (m_drag)
     {
@@ -392,6 +398,7 @@ void CCanvasWnd::MouseUp(CPoint pt)
 {
     DragMode mode = m_drag;
     m_drag = DRAG_NONE;
+    m_syncDirty = true;
     if (GetCapture() == this)
         ReleaseCapture();
 
@@ -591,7 +598,13 @@ void CCanvasWnd::OnTimer(UINT_PTR nIDEvent)
     if (nIDEvent == TIMER_AIRBRUSH && m_drag == DRAG_STROKE)
     {
         Spray(m_lastImg);
+        m_syncDirty = true;
         Invalidate(FALSE);
+        return;
+    }
+    if (nIDEvent == 2)     // 공유 캔버스 동기화 (CanvasSync.cpp)
+    {
+        FlushSync();
         return;
     }
     CWnd::OnTimer(nIDEvent);
@@ -775,6 +788,7 @@ void CCanvasWnd::StrokeSegment(CPoint a, CPoint b)
     default:
         break;
     }
+    m_syncDirty = true;
     Invalidate(FALSE);
 }
 
@@ -1213,6 +1227,7 @@ void CCanvasWnd::CommitSelection()
         return;
     if (m_lifted)
         CompositeFloat(m_img, m_selRect.left, m_selRect.top);
+    m_syncDirty = true;
     ClearSelection();
     Invalidate(FALSE);
     UpdateStatus();

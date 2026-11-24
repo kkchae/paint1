@@ -77,6 +77,15 @@ public:
     void SetModified(bool b);
     void FlattenPending();
 
+    // ---- 공유 캔버스
+    void StartSync();
+    void StopSync();
+    void FlushSync();
+    const CBitmap32& Image() const { return m_img; }
+    void ApplyRemoteRegion(const CRect& rc, const std::vector<DWORD>& px);
+    void ApplyRemoteFull(int w, int h, const std::vector<DWORD>& px);
+    void InvalidateRemoteCursor(CPoint imgPos);
+
     // ---- 텍스트 편집
     bool IsTextActive() const { return m_textActive; }
     bool IsTextEditFocused() const;
@@ -177,6 +186,18 @@ protected:
     COLORREF m_editBrushColor = CLR_INVALID;
     bool m_textActive = false;
     CRect m_textRect;
+
+    // ---- 공유 캔버스
+    CBitmap32 m_syncBase;           // 마지막으로 다른 참가자와 맞춘 그림
+    bool m_syncActive = false;
+    bool m_syncDirty = false;
+    DWORD m_lastCursorSend = 0;
+    bool m_cursorShown = false;
+    bool m_cursorPending = false;
+    CFont m_labelFont;
+    void SendCursorUpdate(bool visible);
+    void DrawRemoteCursors(CDC& dc);
+    void MarkSyncDirty() { m_syncDirty = true; }
 
     // ---- 붓 획
     std::vector<BYTE> m_strokeAlpha;    // 반투명 브러시: 한 획 안에서 겹쳐도 진해지지 않도록 픽셀별 최대 불투명도

@@ -307,6 +307,7 @@ void CCanvasWnd::ZoomStep(int dir, CPoint anchor)
 void CCanvasWnd::OnImageSizeChanged()
 {
     m_floatDirty = true;
+    m_syncDirty = true;
     UpdateScrollBars();
     Invalidate(FALSE);
     UpdateStatus();
@@ -353,6 +354,7 @@ void CCanvasWnd::PushUndo()
     if (m_undo.size() > MAX_UNDO)
         m_undo.erase(m_undo.begin());
     m_redo.clear();
+    m_syncDirty = true;
     SetModified(true);
 }
 
@@ -666,6 +668,7 @@ void CCanvasWnd::OnPaint()
             }
         }
         DrawOverlays(mem);
+        DrawRemoteCursors(mem);
     }
     if (m_rulers)
         DrawRulers(mem);

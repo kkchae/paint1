@@ -124,6 +124,15 @@ BEGIN
         MENUITEM "색 편집(&C)...",                        ID_COLOR_EDIT
         MENUITEM "색 1/색 2 바꾸기(&W)\tCtrl+Shift+W",    ID_COLOR_SWAP
     END
+    POPUP "공유(&S)"
+    BEGIN
+        MENUITEM "공유 시작 (호스트)(&H)...",             ID_COLLAB_HOST
+        MENUITEM "공유 캔버스 참가(&J)...",               ID_COLLAB_JOIN
+        MENUITEM "공유 끝내기 / 나가기(&E)",              ID_COLLAB_LEAVE
+        MENUITEM SEPARATOR
+        MENUITEM "초대 키 복사(&C)",                      ID_COLLAB_COPYKEY
+        MENUITEM "공유 패널 표시(&P)",                    ID_VIEW_CHAT
+    END
     POPUP "도움말(&H)"
     BEGIN
         MENUITEM "그림판 정보(&A)...",                    ID_APP_ABOUT
@@ -206,6 +215,37 @@ BEGIN
     PUSHBUTTON      "취소",IDCANCEL,143,83,50,14
 END
 
+IDD_COLLAB_HOST DIALOGEX 0, 0, 260, 150
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "공유 시작 (호스트)"
+FONT 9, "맑은 고딕", 400, 0, 0x81
+BEGIN
+    LTEXT           "다른 그림판이 초대 키로 이 캔버스에 참가해 함께 그릴 수 있습니다.",IDC_STATIC,10,8,240,18
+    LTEXT           "내 아이디(&I):",IDC_STATIC,10,34,64,8
+    EDITTEXT        IDC_COLLAB_ID,80,32,170,13,ES_AUTOHSCROLL
+    LTEXT           "네트워크 주소(&N):",IDC_STATIC,10,54,64,8
+    COMBOBOX        IDC_COLLAB_IP,80,52,170,120,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "포트(&P):",IDC_STATIC,10,74,64,8
+    EDITTEXT        IDC_COLLAB_PORT,80,72,50,13,ES_NUMBER | ES_AUTOHSCROLL
+    LTEXT           "포트가 사용 중이면 다음 번호를 자동으로 씁니다. 처음 시작할 때 Windows 방화벽 허용 창이 나타날 수 있습니다.",IDC_STATIC,10,94,240,26
+    DEFPUSHBUTTON   "공유 시작",IDOK,146,128,50,14
+    PUSHBUTTON      "취소",IDCANCEL,200,128,50,14
+END
+
+IDD_COLLAB_JOIN DIALOGEX 0, 0, 260, 118
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "공유 캔버스 참가"
+FONT 9, "맑은 고딕", 400, 0, 0x81
+BEGIN
+    LTEXT           "초대 키(&K):",IDC_STATIC,10,12,60,8
+    EDITTEXT        IDC_COLLAB_KEY,74,10,176,13,ES_AUTOHSCROLL | ES_UPPERCASE
+    LTEXT           "내 아이디(&I):",IDC_STATIC,10,32,60,8
+    EDITTEXT        IDC_COLLAB_ID,74,30,176,13,ES_AUTOHSCROLL
+    LTEXT           "참가하면 지금 그림이 호스트의 그림으로 바뀝니다. 다른 참가자와 같은 아이디는 쓸 수 없습니다.",IDC_STATIC,10,52,240,26
+    DEFPUSHBUTTON   "참가",IDOK,146,96,50,14
+    PUSHBUTTON      "취소",IDCANCEL,200,96,50,14
+END
+
 /////////////////////////////////////////////////////////////////////////////
 // 문자열
 
@@ -259,6 +299,11 @@ BEGIN
     ID_VIEW_GRID            "눈금선을 표시하거나 숨깁니다.\n눈금선"
     ID_VIEW_RULERS          "눈금자를 표시하거나 숨깁니다.\n눈금자"
     ID_VIEW_DARKMODE        "어두운 테마와 밝은 테마를 전환합니다.\n다크 모드"
+    ID_COLLAB_HOST          "이 캔버스를 공유하고 초대 키를 발급합니다.\n공유 시작"
+    ID_COLLAB_JOIN          "초대 키로 다른 그림판의 캔버스에 참가합니다.\n공유 캔버스 참가"
+    ID_COLLAB_LEAVE         "공유를 끝내거나 공유 캔버스에서 나옵니다.\n공유 끝내기"
+    ID_COLLAB_COPYKEY       "초대 키를 클립보드에 복사합니다.\n초대 키 복사"
+    ID_VIEW_CHAT            "오른쪽 공유 패널(참가자, 채팅)을 표시하거나 숨깁니다.\n공유 패널"
     ID_SIZE_INC             "선 굵기를 늘립니다.\n굵게"
     ID_SIZE_DEC             "선 굵기를 줄입니다.\n가늘게"
     ID_COLOR_EDIT           "사용자 지정 색을 만듭니다.\n색 편집"

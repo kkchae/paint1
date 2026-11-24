@@ -3,6 +3,7 @@
 #include "resource.h"
 #include "MainFrm.h"
 #include "Theme.h"
+#include "Dialogs.h"
 
 static const TCHAR kOpenFilter[] =
     _T("모든 그림 파일|*.png;*.jpg;*.jpeg;*.jpe;*.jfif;*.bmp;*.dib;*.gif;*.tif;*.tiff;*.ico|")
@@ -27,6 +28,15 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_UPDATE_COMMAND_UI_RANGE(ID_IND_POS, ID_IND_ZOOMBAR, &CMainFrame::OnUpdateIndicator)
     ON_COMMAND(ID_VIEW_DARKMODE, &CMainFrame::OnViewDarkMode)
     ON_UPDATE_COMMAND_UI(ID_VIEW_DARKMODE, &CMainFrame::OnUpdateViewDarkMode)
+    ON_COMMAND(ID_COLLAB_HOST, &CMainFrame::OnCollabHost)
+    ON_COMMAND(ID_COLLAB_JOIN, &CMainFrame::OnCollabJoin)
+    ON_COMMAND(ID_COLLAB_LEAVE, &CMainFrame::OnCollabLeave)
+    ON_COMMAND(ID_COLLAB_COPYKEY, &CMainFrame::OnCollabCopyKey)
+    ON_COMMAND(ID_VIEW_CHAT, &CMainFrame::OnViewChat)
+    ON_UPDATE_COMMAND_UI_RANGE(ID_COLLAB_HOST, ID_VIEW_CHAT, &CMainFrame::OnUpdateCollab)
+    ON_WM_TIMER()
+    ON_MESSAGE(WM_APP_COLLAB_CLEANUP, &CMainFrame::OnCollabCleanupMsg)
+    ON_MESSAGE(WM_APP_COLLAB_FAILED, &CMainFrame::OnCollabFailedMsg)
 END_MESSAGE_MAP()
 
 static UINT kIndicators[] = { ID_SEPARATOR, ID_IND_POS, ID_IND_SEL, ID_IND_SIZE, ID_IND_ZOOM, ID_IND_ZOOMBAR };
@@ -79,6 +89,21 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
     if (!m_canvas.Create(this, AFX_IDW_PANE_FIRST))
         return -1;
 
+    // 공유 캔버스: 세션과 오른쪽 패널 (패널은 공유를 시작하면 나타난다)
+    m_collab = std::make_unique<CCollabSession>(this);
+    if (!m_chat.Create(this, m_collab.get()))
+        return -1;
+    m_chat.OnSend = [this](const CString& text)
+    {
+        m_collab->SendChat(text);
+        for (auto& u : m_collab->Users())
+            if (u.isMe)
+                m_chat.AddMessage(u.id, u.color, text, false);
+    };
+    m_chat.OnCopyKey = [this]() { CopyInviteKey(); };
+    m_chat.OnHide = [this]() { ShowChat(false); };
+    SetTimer(1, 1000, nullptr);
+
     DragAcceptFiles(TRUE);
     ApplyTheme();
     UpdateTitle();
@@ -90,6 +115,7 @@ void CMainFrame::ApplyTheme()
     ApplyThemeToAppMenus();
     ApplyThemeToTitleBar(m_hWnd);
     m_canvas.ApplyTheme();
+    m_chat.ApplyTheme();
     m_panel.Invalidate(FALSE);
     m_status.Invalidate(FALSE);
     m_status.SetWindowPos(nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
@@ -236,6 +262,14 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
         }
         return FALSE;
     }
+    // 채팅 입력 등 다른 편집 컨트롤에 입력 중이면 단축키(Del, Ctrl+C/V/Z 등)를 그 컨트롤에 넘긴다
+    if (pMsg->message == WM_KEYDOWN)
+    {
+        HWND focus = ::GetFocus();
+        TCHAR cls[32] = {};
+        if (focus && ::GetClassName(focus, cls, _countof(cls)) && CString(cls).MakeLower().Find(_T("edit")) >= 0)
+            return FALSE;
+    }
     return CFrameWnd::PreTranslateMessage(pMsg);
 }
 
@@ -269,6 +303,8 @@ void CMainFrame::UpdateTitle()
     CString title;
     bool modified = m_canvas.GetSafeHwnd() && m_canvas.IsModified();
     title.Format(_T("%s%s - 그림판"), modified ? _T("*") : _T(""), (LPCTSTR)DisplayName());
+    if (m_collab && m_collab->IsActive())
+        title += m_collab->GetRole() == CCollabSession::ROLE_HOST ? _T("  [공유 중 · 호스트]") : _T("  [공유 중 · 참가]");
     SetWindowText(title);
 }
 
@@ -401,9 +437,240 @@ void CMainFrame::OnClose()
 {
     if (m_canvas.GetSafeHwnd())
         m_canvas.FlattenPending();
+    if (!ConfirmEndSession(_T("그림판을 닫으면")))
+        return;
     if (!PromptSave())
         return;
+    KillTimer(1);
+    if (m_collab)
+        m_collab->Stop();
+    m_canvas.StopSync();
     CFrameWnd::OnClose();
+}
+
+// ---------------------------------------------------------------------------
+// 공유 캔버스
+
+void CMainFrame::ShowChat(bool show)
+{
+    if (!m_chat.GetSafeHwnd() || ((m_chat.GetStyle() & WS_VISIBLE) != 0) == show)
+        return;
+    m_chat.ShowWindow(show ? SW_SHOW : SW_HIDE);
+    RecalcLayout();
+    m_chat.Refresh();
+}
+
+void CMainFrame::CopyInviteKey()
+{
+    if (!m_collab || m_collab->InviteKey().IsEmpty() || !OpenClipboard())
+        return;
+    CString key = m_collab->InviteKey();
+    ::EmptyClipboard();
+    size_t bytes = (key.GetLength() + 1) * sizeof(WCHAR);
+    HGLOBAL h = ::GlobalAlloc(GMEM_MOVEABLE, bytes);
+    if (h)
+    {
+        memcpy(::GlobalLock(h), (LPCWSTR)key, bytes);
+        ::GlobalUnlock(h);
+        if (!::SetClipboardData(CF_UNICODETEXT, h))
+            ::GlobalFree(h);
+    }
+    ::CloseClipboard();
+}
+
+// 공유 중이면 끝내도 되는지 묻는다
+bool CMainFrame::ConfirmEndSession(LPCTSTR action)
+{
+    if (!m_collab || m_collab->GetRole() == CCollabSession::ROLE_NONE)
+        return true;
+    CString msg;
+    if (m_collab->GetRole() == CCollabSession::ROLE_HOST && m_collab->Users().size() > 1)
+        msg.Format(_T("%s 공유가 끝나고 참가자 %d명의 연결이 끊어집니다. 계속할까요?"), action,
+                   (int)m_collab->Users().size() - 1);
+    else
+        msg.Format(_T("%s 공유가 끝납니다. 계속할까요?"), action);
+    return MessageBox(msg, _T("그림판"), MB_OKCANCEL | MB_ICONQUESTION) == IDOK;
+}
+
+void CMainFrame::OnCollabHost()
+{
+    if (!ConfirmEndSession(_T("새로 공유를 시작하면 지금")))
+        return;
+    CCollabHostDlg dlg(this);
+    if (dlg.DoModal() != IDOK)
+        return;
+    m_canvas.StopSync();
+    m_canvas.FlattenPending();
+    CString err;
+    if (!m_collab->StartHost(dlg.m_id, dlg.m_ip, dlg.m_port, err))
+    {
+        MessageBox(err, _T("그림판"), MB_ICONERROR);
+        return;
+    }
+    m_canvas.StartSync();
+    CopyInviteKey();
+    ShowChat(true);
+    m_chat.AddMessage(CString(), 0, _T("공유를 시작했습니다. 초대 키를 클립보드에 복사했습니다. 참가자에게 알려 주세요."), true);
+    if (dlg.m_ip != 0x7F000001)
+        m_chat.AddMessage(CString(), 0, _T("다른 PC가 접속하지 못하면 Windows 방화벽에서 이 프로그램을 허용해 주세요."), true);
+    UpdateTitle();
+}
+
+void CMainFrame::OnCollabJoin()
+{
+    if (!ConfirmEndSession(_T("다른 캔버스에 참가하면 지금")))
+        return;
+    CCollabJoinDlg dlg(this);
+    if (dlg.DoModal() != IDOK)
+        return;
+    m_canvas.FlattenPending();
+    if (!PromptSave())      // 참가하면 내 그림이 호스트의 그림으로 바뀐다
+        return;
+    m_canvas.StopSync();
+    CString err;
+    if (!m_collab->Join(dlg.m_key, dlg.m_id, err))
+    {
+        MessageBox(err, _T("그림판"), MB_ICONERROR);
+        return;
+    }
+    ShowChat(true);
+    m_chat.AddMessage(CString(), 0, _T("호스트에 연결하는 중입니다..."), true);
+}
+
+void CMainFrame::OnCollabLeave()
+{
+    if (!m_collab || m_collab->GetRole() == CCollabSession::ROLE_NONE)
+        return;
+    if (m_collab->GetRole() == CCollabSession::ROLE_HOST && m_collab->Users().size() > 1 &&
+        !ConfirmEndSession(_T("지금")))
+        return;
+    bool host = m_collab->GetRole() == CCollabSession::ROLE_HOST;
+    m_collab->Stop();
+    m_canvas.StopSync();
+    m_chat.AddMessage(CString(), 0, host ? _T("공유를 끝냈습니다.") : _T("공유 캔버스에서 나왔습니다."), true);
+    UpdateTitle();
+}
+
+void CMainFrame::OnCollabCopyKey()
+{
+    CopyInviteKey();
+}
+
+void CMainFrame::OnViewChat()
+{
+    ShowChat((m_chat.GetStyle() & WS_VISIBLE) == 0);
+}
+
+void CMainFrame::OnUpdateCollab(CCmdUI* pCmdUI)
+{
+    CCollabSession::Role role = m_collab ? m_collab->GetRole() : CCollabSession::ROLE_NONE;
+    switch (pCmdUI->m_nID)
+    {
+    case ID_COLLAB_LEAVE:   pCmdUI->Enable(role != CCollabSession::ROLE_NONE); break;
+    case ID_COLLAB_COPYKEY: pCmdUI->Enable(role == CCollabSession::ROLE_HOST); break;
+    case ID_VIEW_CHAT:      pCmdUI->SetCheck(m_chat.GetSafeHwnd() && (m_chat.GetStyle() & WS_VISIBLE)); break;
+    default:                pCmdUI->Enable(TRUE); break;
+    }
+}
+
+void CMainFrame::OnTimer(UINT_PTR nIDEvent)
+{
+    if (nIDEvent == 1 && m_collab)
+    {
+        m_collab->Tick();
+        return;
+    }
+    CFrameWnd::OnTimer(nIDEvent);
+}
+
+LRESULT CMainFrame::OnCollabCleanupMsg(WPARAM, LPARAM)
+{
+    if (m_collab)
+        m_collab->Cleanup();
+    return 0;
+}
+
+LRESULT CMainFrame::OnCollabFailedMsg(WPARAM, LPARAM)
+{
+    // 소켓 알림 처리 중에 대화 상자를 띄우지 않도록 메시지로 미뤄서 보여 준다
+    CString msg = m_failMessage;
+    m_failMessage.Empty();
+    if (!msg.IsEmpty())
+        MessageBox(msg, _T("그림판 - 공유 캔버스"), MB_ICONWARNING);
+    return 0;
+}
+
+// ---- ICollabEvents
+
+void CMainFrame::OnCollabStateChanged()
+{
+    m_chat.Refresh();
+    UpdateTitle();
+    m_canvas.Invalidate(FALSE);
+}
+
+void CMainFrame::OnCollabChat(const CString& id, COLORREF color, const CString& text, bool system)
+{
+    m_chat.AddMessage(id, color, text, system);
+    if (!system)
+        ShowChat(true);
+}
+
+void CMainFrame::OnCollabEdit(const CRect& rc, const std::vector<DWORD>& px)
+{
+    m_canvas.ApplyRemoteRegion(rc, px);
+}
+
+void CMainFrame::OnCollabFull(int w, int h, const std::vector<DWORD>& px)
+{
+    m_canvas.ApplyRemoteFull(w, h, px);
+}
+
+void CMainFrame::OnCollabCursor(CPoint oldPos, bool oldVisible, CPoint pos, bool visible)
+{
+    if (oldVisible)
+        m_canvas.InvalidateRemoteCursor(oldPos);
+    if (visible)
+        m_canvas.InvalidateRemoteCursor(pos);
+}
+
+void CMainFrame::OnCollabJoined()
+{
+    m_canvas.StartSync();
+    m_path.Empty();
+    m_canvas.SetModified(false);
+    CString host;
+    for (auto& u : m_collab->Users())
+        if (u.isHost)
+            host = u.id;
+    m_chat.AddMessage(CString(), 0, host + _T(" 님의 캔버스에 참가했습니다."), true);
+    UpdateTitle();
+}
+
+void CMainFrame::OnCollabFailed(const CString& message)
+{
+    m_canvas.StopSync();
+    m_chat.AddMessage(CString(), 0, message, true);
+    m_chat.Refresh();
+    UpdateTitle();
+    m_failMessage = message;
+    PostMessage(WM_APP_COLLAB_FAILED);
+}
+
+void CMainFrame::CollabFlushPending()
+{
+    m_canvas.FlushSync();
+}
+
+const CBitmap32& CMainFrame::CollabCurrentImage()
+{
+    return m_canvas.Image();
+}
+
+void CMainFrame::CollabRequestCleanup()
+{
+    if (GetSafeHwnd())
+        PostMessage(WM_APP_COLLAB_CLEANUP);
 }
 
 void CMainFrame::OnDropFiles(HDROP hDropInfo)

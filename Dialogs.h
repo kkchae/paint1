@@ -26,6 +26,38 @@ private:
     bool m_updating = false;
 };
 
+// 공유 시작(호스트) 대화 상자
+class CCollabHostDlg : public CDialog
+{
+public:
+    explicit CCollabHostDlg(CWnd* pParent = nullptr);
+    enum { IDD = IDD_COLLAB_HOST };
+    CString m_id;
+    DWORD m_ip = 0;
+    UINT m_port = 0;
+
+protected:
+    std::vector<std::pair<DWORD, CString>> m_addrs;
+    BOOL OnInitDialog() override;
+    void OnOK() override;
+};
+
+// 공유 캔버스 참가 대화 상자
+class CCollabJoinDlg : public CDialog
+{
+public:
+    explicit CCollabJoinDlg(CWnd* pParent = nullptr);
+    enum { IDD = IDD_COLLAB_JOIN };
+    CString m_key;
+    CString m_id;
+
+protected:
+    BOOL OnInitDialog() override;
+    void OnOK() override;
+};
+
+CString DefaultCollabUserId();
+
 // 이미지 속성(캔버스 크기) 대화 상자
 class CCanvasSizeDlg : public CDialog
 {

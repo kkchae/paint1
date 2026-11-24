@@ -1,6 +1,140 @@
 #include "Dialogs.h"
+#include "Protocol.h"
 
 static const int MAX_DIM = 20000;
+
+static const TCHAR kCollabSection[] = _T("Collab");
+
+// 지난번 아이디, 없으면 Windows 사용자 이름
+CString DefaultCollabUserId()
+{
+    CString id = AfxGetApp()->GetProfileString(kCollabSection, _T("UserId"));
+    if (id.IsEmpty())
+    {
+        TCHAR name[64] = {};
+        DWORD n = _countof(name);
+        if (::GetUserName(name, &n))
+            id = name;
+    }
+    return id.Left(Proto::MAX_ID_LENGTH);
+}
+
+static bool CheckUserId(CWnd* dlg, CString& id)
+{
+    id.Trim();
+    if (!Proto::IsValidUserId(id))
+    {
+        CString msg;
+        msg.Format(_T("아이디를 1~%d글자로 입력해 주세요."), Proto::MAX_ID_LENGTH);
+        dlg->MessageBox(msg, _T("그림판"), MB_ICONWARNING);
+        dlg->GetDlgItem(IDC_COLLAB_ID)->SetFocus();
+        return false;
+    }
+    return true;
+}
+
+// ---------------------------------------------------------------------------
+
+CCollabHostDlg::CCollabHostDlg(CWnd* pParent) : CDialog(IDD_COLLAB_HOST, pParent)
+{
+}
+
+BOOL CCollabHostDlg::OnInitDialog()
+{
+    CDialog::OnInitDialog();
+    SetDlgItemText(IDC_COLLAB_ID, DefaultCollabUserId());
+    ((CEdit*)GetDlgItem(IDC_COLLAB_ID))->LimitText(Proto::MAX_ID_LENGTH);
+
+    CComboBox* combo = (CComboBox*)GetDlgItem(IDC_COLLAB_IP);
+    DWORD lastIp = (DWORD)AfxGetApp()->GetProfileInt(kCollabSection, _T("HostIp"), 0);
+    int sel = 0;
+    for (auto& a : Proto::EnumLocalAddresses())
+    {
+        int i = combo->AddString(a.label);
+        combo->SetItemData(i, a.ip);
+        if (a.ip == lastIp)
+            sel = i;
+    }
+    combo->SetCurSel(sel);
+    SetDlgItemInt(IDC_COLLAB_PORT, AfxGetApp()->GetProfileInt(kCollabSection, _T("Port"), Proto::DEFAULT_PORT));
+    return TRUE;
+}
+
+void CCollabHostDlg::OnOK()
+{
+    GetDlgItemText(IDC_COLLAB_ID, m_id);
+    if (!CheckUserId(this, m_id))
+        return;
+    CComboBox* combo = (CComboBox*)GetDlgItem(IDC_COLLAB_IP);
+    int sel = combo->GetCurSel();
+    if (sel < 0)
+    {
+        MessageBox(_T("네트워크 주소를 선택해 주세요."), _T("그림판"), MB_ICONWARNING);
+        return;
+    }
+    m_ip = (DWORD)combo->GetItemData(sel);
+    BOOL ok = FALSE;
+    m_port = GetDlgItemInt(IDC_COLLAB_PORT, &ok, FALSE);
+    if (!ok || m_port < 1024 || m_port > 65000)
+    {
+        MessageBox(_T("포트는 1024~65000 사이의 숫자여야 합니다."), _T("그림판"), MB_ICONWARNING);
+        return;
+    }
+    AfxGetApp()->WriteProfileString(kCollabSection, _T("UserId"), m_id);
+    AfxGetApp()->WriteProfileInt(kCollabSection, _T("HostIp"), (int)m_ip);
+    AfxGetApp()->WriteProfileInt(kCollabSection, _T("Port"), (int)m_port);
+    CDialog::OnOK();
+}
+
+// ---------------------------------------------------------------------------
+
+CCollabJoinDlg::CCollabJoinDlg(CWnd* pParent) : CDialog(IDD_COLLAB_JOIN, pParent)
+{
+}
+
+BOOL CCollabJoinDlg::OnInitDialog()
+{
+    CDialog::OnInitDialog();
+    SetDlgItemText(IDC_COLLAB_ID, DefaultCollabUserId());
+    ((CEdit*)GetDlgItem(IDC_COLLAB_ID))->LimitText(Proto::MAX_ID_LENGTH);
+
+    // 클립보드에 초대 키가 있으면 미리 채운다
+    if (OpenClipboard())
+    {
+        HANDLE h = ::GetClipboardData(CF_UNICODETEXT);
+        if (h)
+        {
+            CString text((LPCWSTR)::GlobalLock(h));
+            ::GlobalUnlock(h);
+            text.Trim();
+            DWORD ip; WORD port; BYTE secret[8];
+            if (text.GetLength() < 64 && Proto::DecodeInviteKey(text, ip, port, secret))
+                SetDlgItemText(IDC_COLLAB_KEY, text);
+        }
+        ::CloseClipboard();
+    }
+    GetDlgItem(IDC_COLLAB_KEY)->SetFocus();
+    return FALSE;
+}
+
+void CCollabJoinDlg::OnOK()
+{
+    GetDlgItemText(IDC_COLLAB_KEY, m_key);
+    m_key.Trim();
+    DWORD ip; WORD port; BYTE secret[8];
+    if (!Proto::DecodeInviteKey(m_key, ip, port, secret))
+    {
+        MessageBox(_T("초대 키가 올바르지 않습니다.\n호스트에게 받은 키(예: ABCD-EFGH-...)를 그대로 붙여넣어 주세요."),
+                   _T("그림판"), MB_ICONWARNING);
+        GetDlgItem(IDC_COLLAB_KEY)->SetFocus();
+        return;
+    }
+    GetDlgItemText(IDC_COLLAB_ID, m_id);
+    if (!CheckUserId(this, m_id))
+        return;
+    AfxGetApp()->WriteProfileString(kCollabSection, _T("UserId"), m_id);
+    CDialog::OnOK();
+}
 
 CResizeDlg::CResizeDlg(int w, int h, CWnd* pParent)
     : CDialog(IDD_RESIZE, pParent), m_origW(w), m_origH(h), m_newW(w), m_newH(h)

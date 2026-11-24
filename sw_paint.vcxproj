@@ -96,6 +96,9 @@
   <ItemGroup>
     <ClInclude Include="Bitmap32.h" />
     <ClInclude Include="CanvasWnd.h" />
+    <ClInclude Include="ChatPanel.h" />
+    <ClInclude Include="Collab.h" />
+    <ClInclude Include="Protocol.h" />
     <ClInclude Include="Dialogs.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MainFrm.h" />
@@ -109,6 +112,10 @@
     <ClCompile Include="Bitmap32.cpp" />
     <ClCompile Include="CanvasCmds.cpp" />
     <ClCompile Include="CanvasInput.cpp" />
+    <ClCompile Include="CanvasSync.cpp" />
+    <ClCompile Include="ChatPanel.cpp" />
+    <ClCompile Include="Collab.cpp" />
+    <ClCompile Include="Protocol.cpp" />
     <ClCompile Include="CanvasWnd.cpp" />
     <ClCompile Include="Dialogs.cpp" />
     <ClCompile Include="MainFrm.cpp" />

@@ -34,6 +34,14 @@ BOOL CPaintApp::InitInstance()
     Gdiplus::GdiplusStartupInput gsi;
     Gdiplus::GdiplusStartup(&m_gdiplusToken, &gsi, nullptr);
 
+    // 공유 캔버스: Winsock, 채팅 창(리치 에디트)
+    if (!AfxSocketInit())
+    {
+        AfxMessageBox(_T("네트워크 기능을 초기화할 수 없습니다."), MB_ICONERROR);
+        return FALSE;
+    }
+    AfxInitRichEdit2();
+
     SetRegistryKey(_T("SwPaint"));
 
     CMainFrame* pFrame = new CMainFrame;

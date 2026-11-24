@@ -5,6 +5,8 @@
 #define IDR_MAINFRAME               128
 #define IDD_RESIZE                  130
 #define IDD_CANVASSIZE              131
+#define IDD_COLLAB_HOST             132
+#define IDD_COLLAB_JOIN             133
 
 // Dialog controls
 #define IDC_RB_PERCENT              1001
@@ -18,6 +20,19 @@
 #define IDC_EDIT_HEIGHT             1011
 #define IDC_STATIC_CUR              1012
 #define IDC_TEXTEDIT                1100
+#define IDC_COLLAB_ID               1200
+#define IDC_COLLAB_IP               1201
+#define IDC_COLLAB_PORT             1202
+#define IDC_COLLAB_KEY              1203
+#define IDC_CHAT_LOG                1210
+#define IDC_CHAT_INPUT              1211
+
+// Collaboration
+#define ID_COLLAB_HOST              33900
+#define ID_COLLAB_JOIN              33901
+#define ID_COLLAB_LEAVE             33902
+#define ID_COLLAB_COPYKEY           33903
+#define ID_VIEW_CHAT                33904
 
 // Tools
 #define ID_TOOL_SELECT_RECT         33000
