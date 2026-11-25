@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Application">
+      <UniqueIdentifier>{3A6E1C10-5B2F-4D71-9E0A-1F2B3C4D5E61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Canvas">
+      <UniqueIdentifier>{3A6E1C10-5B2F-4D71-9E0A-1F2B3C4D5E62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{3A6E1C10-5B2F-4D71-9E0A-1F2B3C4D5E63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{3A6E1C10-5B2F-4D71-9E0A-1F2B3C4D5E64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Collaboration">
+      <UniqueIdentifier>{3A6E1C10-5B2F-4D71-9E0A-1F2B3C4D5E65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{3A6E1C10-5B2F-4D71-9E0A-1F2B3C4D5E66}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Docs">
+      <UniqueIdentifier>{3A6E1C10-5B2F-4D71-9E0A-1F2B3C4D5E67}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Application: entry point, main frame, common headers -->
+    <ClInclude Include="framework.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="MainFrm.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <!-- Canvas: drawing tools, selection, zoom/scroll, undo, file I/O -->
+    <ClInclude Include="CanvasWnd.h">
+      <Filter>Canvas</Filter>
+    </ClInclude>
+    <!-- Graphics: bitmap, shape geometry -->
+    <ClInclude Include="Bitmap32.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Shapes.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <!-- UI: tool panel, status bar, theme, dialogs -->
+    <ClInclude Include="ToolPanel.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="StatusBarEx.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Theme.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <!-- Collaboration: protocol, session, sync, chat panel -->
+    <ClInclude Include="Protocol.h">
+      <Filter>Collaboration</Filter>
+    </ClInclude>
+    <ClInclude Include="Collab.h">
+      <Filter>Collaboration</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatPanel.h">
+      <Filter>Collaboration</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PaintApp.cpp">
+      <Filter>Application</Filter>
+    </ClCompile>
+    <ClCompile Include="MainFrm.cpp">
+      <Filter>Application</Filter>
+    </ClCompile>
+    <ClCompile Include="CanvasWnd.cpp">
+      <Filter>Canvas</Filter>
+    </ClCompile>
+    <ClCompile Include="CanvasInput.cpp">
+      <Filter>Canvas</Filter>
+    </ClCompile>
+    <ClCompile Include="CanvasCmds.cpp">
+      <Filter>Canvas</Filter>
+    </ClCompile>
+    <ClCompile Include="Bitmap32.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Shapes.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolPanel.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelIcons.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="StatusBarEx.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Theme.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Protocol.cpp">
+      <Filter>Collaboration</Filter>
+    </ClCompile>
+    <ClCompile Include="Collab.cpp">
+      <Filter>Collaboration</Filter>
+    </ClCompile>
+    <ClCompile Include="CanvasSync.cpp">
+      <Filter>Collaboration</Filter>
+    </ClCompile>
+    <ClCompile Include="ChatPanel.cpp">
+      <Filter>Collaboration</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MyPaint.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\MyPaint.ico">
+      <Filter>Resources</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md">
+      <Filter>Docs</Filter>
+    </None>
+    <None Include=".gitignore">
+      <Filter>Docs</Filter>
+    </None>
+  </ItemGroup>
+</Project>
