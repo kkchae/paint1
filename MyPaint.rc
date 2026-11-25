@@ -1,4 +1,4 @@
-// sw_paint.rc : resource script (UTF-8, see code_page pragma below)
+// MyPaint.rc : resource script (UTF-8, see code_page pragma below)
 #include "resource.h"
 #include "afxres.h"
 
@@ -9,7 +9,7 @@ LANGUAGE LANG_KOREAN, SUBLANG_DEFAULT
 /////////////////////////////////////////////////////////////////////////////
 // 아이콘
 
-IDR_MAINFRAME           ICON                    "res\\sw_paint.ico"
+IDR_MAINFRAME           ICON                    "res\\MyPaint.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 // 메뉴
@@ -328,8 +328,8 @@ BEGIN
         BEGIN
             VALUE "FileDescription", "그림판 (MFC)"
             VALUE "FileVersion", "1.0.0.1"
-            VALUE "InternalName", "sw_paint.exe"
-            VALUE "OriginalFilename", "sw_paint.exe"
+            VALUE "InternalName", "MyPaint.exe"
+            VALUE "OriginalFilename", "MyPaint.exe"
             VALUE "ProductName", "그림판 (MFC)"
             VALUE "ProductVersion", "1.0.0.1"
         END

@@ -14,7 +14,7 @@
     <VCProjectVersion>17.0</VCProjectVersion>
     <ProjectGuid>{7C3B2E8A-5D41-4F6B-9A0E-2B1C3D4E5F60}</ProjectGuid>
     <Keyword>MFCProj</Keyword>
-    <RootNamespace>sw_paint</RootNamespace>
+    <RootNamespace>MyPaint</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -127,10 +127,10 @@
     <ClCompile Include="ToolPanel.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="sw_paint.rc" />
+    <ResourceCompile Include="MyPaint.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\sw_paint.ico" />
+    <Image Include="res\MyPaint.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

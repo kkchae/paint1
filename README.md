@@ -5,13 +5,13 @@ Windows 11 그림판과 비슷한 기능을 하는 MFC 기반 그림 편집기�
 ## 빌드
 
 - Visual Studio 2022 (v143), "C++를 사용한 데스크톱 개발" + MFC 구성 요소
-- `sw_paint.sln`을 열고 빌드하거나, 명령줄에서:
+- `MyPaint.sln`을 열고 빌드하거나, 명령줄에서:
 
 ```powershell
-& "C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe" sw_paint.sln /p:Configuration=Release /p:Platform=x64
+& "C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe" MyPaint.sln /p:Configuration=Release /p:Platform=x64
 ```
 
-결과물: `x64\Release\sw_paint.exe` (MFC 정적 링크라 단독 실행 가능)
+결과물: `x64\Release\MyPaint.exe` (MFC 정적 링크라 단독 실행 가능)
 
 ## 기능
 

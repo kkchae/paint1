@@ -17,6 +17,7 @@ Win32/
 Debug/
 Release/
 sw_paint/x64/
+MyPaint/x64/
 *.obj
 *.pdb
 *.ilk
